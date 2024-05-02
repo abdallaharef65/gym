@@ -2,11 +2,11 @@
 export {
   getData,
   // selectDataById,
-  // selectDataByParam,
+  selectDataByParam,
   // updateDataWithoutId,
-  // deleteData,
-  // updateData,
-  // addData,
+  deleteDataByParam,
+  updateData,
+  addData,
   // patchData,
   // deleteWithParams,
   // addDataWithoutBody

@@ -39,6 +39,11 @@ const _nav = [
     to: '/calendar',
   },
   {
+    component: CNavItem,
+    name: 'Role',
+    to: '/role',
+  },
+  {
     component: CNavGroup,
     name: 'Buttons',
     to: '/buttons',

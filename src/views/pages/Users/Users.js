@@ -5,13 +5,18 @@ import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/reac
 import { getData } from '../../../helper/index'
 import ReactTable from '../../../components/common/table/ReactTable'
 import UsersModal from './modalForm'
+import DeleteModal from '../../../components/common/deleteModal'
 
 const Users = () => {
   const [dataUsers, setDataUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [visibleModale, setVisibleModale] = useState(false)
+  const [reRenderData, setReRenderData] = useState(false)
+  const [visibleDeleteModale, setVisibleDeleteModale] = useState(false)
+
   const [flagState, setFlagState] = useState(0)
   const [dataForEdit, setDataForEdit] = useState({})
+  const [rowIdForDekete, setRowIdForDekete] = useState({})
 
   //test commit 1
   const columns = [
@@ -50,16 +55,14 @@ const Users = () => {
           >
             Edit
           </CButton>
+
           <CButton
-            color="success"
-            className="me-3"
+            color="danger"
+            className="me-3 text-white"
             onClick={() => {
-              setFlagState(1), handleAddData()
+              handleShowDeleteModal(row)
             }}
           >
-            Add
-          </CButton>
-          <CButton color="success" className="me-3">
             Delete
           </CButton>
         </React.Fragment>
@@ -73,14 +76,17 @@ const Users = () => {
     setDataForEdit(row.original)
     setVisibleModale(true)
   }
+
+  const handleShowDeleteModal = (row) => {
+    setRowIdForDekete(row.original.id)
+    setVisibleDeleteModale(true)
+  }
   useEffect(() => {
     ;(async () => {
       try {
         // Make a GET request to the API endpoint
         setLoading(true)
         const res = await getData('user')
-        console.log(res.data)
-
         setDataUsers(
           res.data.map((item) => ({
             ...item,
@@ -90,21 +96,36 @@ const Users = () => {
 
         setTimeout(() => {
           setLoading(false)
-        }, 2000)
+        }, 500)
       } catch (err) {
         console.log(err)
       }
     })()
-  }, [])
+  }, [reRenderData])
   return (
     <React.Fragment>
       <UsersModal
+        setReRenderData={setReRenderData}
+        reRenderData={reRenderData}
         visible={visibleModale}
         setVisible={setVisibleModale}
         flagState={flagState}
         setFlagState={setFlagState}
         dataForEdit={dataForEdit}
       />
+
+      <DeleteModal
+        visible={visibleDeleteModale}
+        setVisible={setVisibleDeleteModale}
+        setReRenderData={setReRenderData}
+        reRenderData={reRenderData}
+        Title={'user'}
+        id={rowIdForDekete}
+        flagState={flagState}
+        setFlagState={setFlagState}
+        dataForEdit={dataForEdit}
+      />
+
       {loading ? (
         <CRow className="mt-5">
           <CCol sm={5}></CCol>
@@ -114,14 +135,30 @@ const Users = () => {
           <CCol sm={5}></CCol>
         </CRow>
       ) : (
-        <CRow>
-          <CCol xs={12}>
-            <h2>Users </h2>
-          </CCol>
+        <>
           <CRow>
-            <ReactTable data={dataUsers} columns={columns} />
+            <CCol sm={11}>
+              <h2>Users </h2>
+            </CCol>
+            <CCol sm={1}>
+              <CButton
+                color="success"
+                className="me-3 text-white"
+                onClick={() => {
+                  setFlagState(1), handleAddData()
+                }}
+              >
+                Add
+              </CButton>
+            </CCol>
           </CRow>
-        </CRow>
+
+          <CRow>
+            <CRow>
+              <ReactTable data={dataUsers} columns={columns} />
+            </CRow>
+          </CRow>
+        </>
       )}
     </React.Fragment>
   )
