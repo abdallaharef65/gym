@@ -8,6 +8,7 @@ const Buttons = React.lazy(() => import('./views/buttons/index'))
 const Users = React.lazy(() => import('./views/pages/Users/Users'))
 const Calendar = React.lazy(() => import('./views/pages/calendar/calendar'))
 const Roles = React.lazy(() => import('./views/pages/role/Roles'))
+const RolesAddForm = React.lazy(() => import('./views/pages/role/addRoles'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -16,6 +17,7 @@ const routes = [
   { path: '/users', name: 'Users', element: Users, exact: true },
   { path: '/calendar', name: 'Calendar', element: Calendar, exact: true },
   { path: '/role', name: 'Role', element: Roles, exact: true },
+  { path: '/addrole', name: 'Role', element: RolesAddForm, exact: true },
 ]
 
 export default routes

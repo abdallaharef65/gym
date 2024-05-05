@@ -29,17 +29,16 @@ const AppSidebar = () => {
 
   const [nav, setNav] = useState(null)
 
+  const screen = localStorage.getItem('userScreens')
+    ? JSON.parse(localStorage.getItem('userScreens'))
+    : null
+
   useEffect(() => {
     ;(async () => {
       if (true) {
         //screen
-        const param = 'role_id=1'
-
-        var screen = await selectDataByParam('role_screens', param)
-        screen = screen.data
         let screenArr = []
         for (let index = 1; index <= 10; index++) {
-          
           const foundGroup = screen.filter((item) => item.group_screen_id == index)
           if (foundGroup.length > 0) {
             if (foundGroup[0].group_screen_id == index)
@@ -57,9 +56,6 @@ const AppSidebar = () => {
               })
           }
         }
-        console.log(screenArr)
-        // setNav(screenArr)
-
         setNav([
           ...screenArr,
           // {

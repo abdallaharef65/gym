@@ -4,10 +4,74 @@ import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/reac
 
 import { getData } from '../../../helper/index'
 import ReactTable from '../../../components/common/table/ReactTable'
-import UsersModal from './modalForm'
-import DeleteModal from '../../../components/common/deleteModal'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNavigation } from 'src/redux/Reducer/roleReducer/roleSlice'
+import { useNavigate, Link } from 'react-router-dom'
+const Role = () => {
+  const dispatch = useDispatch()
+  const [dataRoles, setDataRoles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [reRenderData, setReRenderData] = useState(false)
 
-const Users = () => {
+  const selectedNav = useSelector((state) => state.rolesSlice.roleScreen)
+  console.log(selectedNav)
+  useEffect(() => {
+    ;(async () => {
+      try {
+        dispatch(
+          setNavigation({
+            ...selectedNav,
+            AppointmentScreen: [{ id: 1 }],
+          }),
+        )
+        // Make a GET request to the API endpoint
+        setLoading(true)
+        const res = await getData('role')
+        setDataRoles(
+          res.data.map((item) => ({
+            ...item,
+          })),
+        )
+
+        setTimeout(() => {
+          setLoading(false)
+        }, 500)
+      } catch (err) {
+        console.log(err)
+      }
+    })()
+  }, [reRenderData])
+
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Role Name',
+        accessor: 'role',
+      },
+
+      {
+        Header: 'Options',
+        accessor: 'index',
+        Cell: ({ row }) => (
+          <React.Fragment>
+            <Link to={`/addrole?id=${row.original}`}>
+              {' '}
+              <CButton
+                color="primary"
+                className="me-3"
+                onClick={() => {
+                  console.log(row.original)
+                }}
+              >
+                Edit
+              </CButton>
+            </Link>
+          </React.Fragment>
+        ),
+      },
+    ],
+    [],
+  )
 
   return (
     <React.Fragment>
@@ -55,15 +119,13 @@ const Users = () => {
                 //   setFlagState(1), handleAddData()
                 // }}
               >
-                Add
+                <Link to={'/addrole'}>Add Role</Link>
               </CButton>
             </CCol>
           </CRow>
 
           <CRow>
-            <CRow>
-              {/* <ReactTable data={dataUsers} columns={columns} /> */}
-            </CRow>
+            <ReactTable data={dataRoles} columns={columns} />
           </CRow>
         </>
       )}
@@ -71,4 +133,4 @@ const Users = () => {
   )
 }
 
-export default Users
+export default Role
