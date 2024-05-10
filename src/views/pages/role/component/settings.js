@@ -11,21 +11,29 @@ const Settings = ({ screens, id }) => {
 
   const dispatch = useDispatch()
   useEffect(() => {
-    const dataScreen = screens.map((item) => ({
-      ...item,
-      check: id ? true : false,
-      main_page: false,
-    }))
+    const dataScreen = screens
+      .filter((x) => x.group_screen_id == 3)
+      .map((item) => ({
+        ...item,
+      }))
     setSettingsScreens(dataScreen)
+
+    //.filter((x) => x.group_screen_id == 3) Settings
+    //.filter((x) => x.group_screen_id == 2)
+
+    const AppointmentScreen = screens.filter((x) => x.group_screen_id == 2)
 
     dispatch(
       setNavigation({
         ...selectedNav,
         settingsScreen: dataScreen,
+        AppointmentScreen: AppointmentScreen.map((item) => ({
+          ...item,
+
+        })),
       }),
     )
-  }, [])
-  // console.log(selectedNav)
+  }, [id])
 
   const handleChangeCheckbox = (checkIndex) => {
     if (settingsScreens[checkIndex].check === true) {
@@ -36,6 +44,12 @@ const Settings = ({ screens, id }) => {
         return item
       })
       setSettingsScreens(dataScreen)
+      dispatch(
+        setNavigation({
+          ...selectedNav,
+          settingsScreen: dataScreen,
+        }),
+      )
     } else {
       const dataScreen = settingsScreens.map((item) => {
         if (item.id === settingsScreens[checkIndex].id) {

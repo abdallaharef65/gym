@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -23,12 +25,14 @@ import {
   cilMenu,
   cilMoon,
   cilSun,
+  cilAccountLogout,
 } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-
+import { useNavigate, useSearchParams } from 'react-router-dom'
 const AppHeader = () => {
+  const navigate = useNavigate()
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -57,20 +61,25 @@ const AppHeader = () => {
               Dashboard
             </CNavLink>
           </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
           <CNavItem>
             <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
+              <CIcon
+                icon={cilAccountLogout}
+                size="lg"
+                onClick={() => {
+                  localStorage.clear()
+                  setTimeout(() => {
+                    navigate('/login')
+                  }, 1000)
+                }}
+              />
+
+              {/* <cilAccountLogout /> */}
             </CNavLink>
           </CNavItem>
-          <CNavItem>
+          {/* <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilList} size="lg" />
             </CNavLink>
@@ -79,7 +88,7 @@ const AppHeader = () => {
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />
             </CNavLink>
-          </CNavItem>
+          </CNavItem> */}
         </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">

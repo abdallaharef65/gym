@@ -6,8 +6,18 @@ import { getData } from '../../../helper/index'
 import ReactTable from '../../../components/common/table/ReactTable'
 import UsersModal from './modalForm'
 import DeleteModal from '../../../components/common/deleteModal'
+import { isAuthorizatoin } from '../../../utils/isAuthorization'
+import { useNavigate } from 'react-router-dom'
 
 const Users = () => {
+
+  const navigate = useNavigate()
+  // check role 
+  useEffect(() => {
+    const nav = isAuthorizatoin('users')
+    nav && navigate(nav)
+  }, [])
+
   const [dataUsers, setDataUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [visibleModale, setVisibleModale] = useState(false)
@@ -119,7 +129,8 @@ const Users = () => {
         setVisible={setVisibleDeleteModale}
         setReRenderData={setReRenderData}
         reRenderData={reRenderData}
-        Title={'user'}
+        Title={'User'}
+        route={'user'}
         id={rowIdForDekete}
         flagState={flagState}
         setFlagState={setFlagState}

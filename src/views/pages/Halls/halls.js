@@ -4,29 +4,20 @@ import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/reac
 
 import { getData } from '../../../helper/index'
 import ReactTable from '../../../components/common/table/ReactTable'
-// import HallModal from './modalForm'
+import HallModal from './modalForm'
 import DeleteModal from '../../../components/common/deleteModal'
 import { isAuthorizatoin } from '../../../utils/isAuthorization'
 import { useNavigate } from 'react-router-dom'
-//Calendar
-// import FullCalendar from '@fullcalendar/react'
-// import dayGridPlugin from '@fullcalendar/daygrid'
-// import timeGridPlugin from '@fullcalendar/timegrid'
-// import interactionPlugin from '@fullcalendar/interaction'
 
-// import '@fullcalendar/core/main.css'
-// import '@fullcalendar/daygrid/main.css'
-// import '@fullcalendar/timegrid/main.css'
-
-const Calendar = () => {
+const Halls = () => {
   const navigate = useNavigate()
   // check role
   useEffect(() => {
-    const nav = isAuthorizatoin('calendar')
+    const nav = isAuthorizatoin('halls')
     nav && navigate(nav)
   }, [])
 
-  const [dataHolidays, setDataHolidays] = useState([])
+  const [dataHalls, setDataHalls] = useState([])
   const [loading, setLoading] = useState(true)
   const [visibleModale, setVisibleModale] = useState(false)
   const [reRenderData, setReRenderData] = useState(false)
@@ -105,13 +96,13 @@ const Calendar = () => {
       try {
         // Make a GET request to the API endpoint
         setLoading(true)
-        // const res = await getData('holidays')
-        // setDataHolidays(
-        //   res.data.map((item) => ({
-        //     ...item,
-        //     name: item.first_name + ' ' + item.last_name,
-        //   })),
-        // )
+        const res = await getData('halls')
+        setDataHalls(
+          res.data.map((item) => ({
+            ...item,
+            name: item.first_name + ' ' + item.last_name,
+          })),
+        )
 
         setTimeout(() => {
           setLoading(false)
@@ -121,23 +112,9 @@ const Calendar = () => {
       }
     })()
   }, [reRenderData])
-
-  const events = [
-    { title: 'Event 1', date: '2024-05-01', color: 'red' },
-    { title: 'Event 2', date: '2024-05-05', color: 'blue' },
-    { title: 'Event 3', date: '2024-05-10', color: 'green' },
-  ]
-
-  const eventContent = (arg) => {
-    return (
-      <div style={{ backgroundColor: arg.event.backgroundColor }}>
-        {arg.timeText} - {arg.event.title}
-      </div>
-    )
-  }
   return (
     <React.Fragment>
-      {/* <HallModal
+      <HallModal
         setReRenderData={setReRenderData}
         reRenderData={reRenderData}
         visible={visibleModale}
@@ -152,13 +129,13 @@ const Calendar = () => {
         setVisible={setVisibleDeleteModale}
         setReRenderData={setReRenderData}
         reRenderData={reRenderData}
-        Title={'Holidays'}
-        route={'holidays'}
+        Title={'Halls'}
+        route={'halls'}
         id={rowIdForDekete}
         flagState={flagState}
         setFlagState={setFlagState}
         dataForEdit={dataForEdit}
-      /> */}
+      /> 
 
       {loading ? (
         <CRow className="mt-5">
@@ -172,7 +149,7 @@ const Calendar = () => {
         <>
           <CRow>
             <CCol sm={11}>
-              <h2>Calendar </h2>
+              <h2>Halls </h2>
             </CCol>
             <CCol sm={1}>
               <CButton
@@ -188,16 +165,9 @@ const Calendar = () => {
           </CRow>
 
           <CRow>
-            {/* <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
-              events={events}
-              eventContent={eventContent}
-            /> */}
-
-            {/* <CRow>
-              <ReactTable data={dataHolidays} columns={columns} />
-            </CRow> */}
+            <CRow>
+              <ReactTable data={dataHalls} columns={columns} />
+            </CRow>
           </CRow>
         </>
       )}
@@ -205,4 +175,4 @@ const Calendar = () => {
   )
 }
 
-export default Calendar
+export default Halls

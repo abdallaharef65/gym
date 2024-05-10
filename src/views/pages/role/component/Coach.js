@@ -4,8 +4,8 @@ import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/reac
 import { useDispatch, useSelector } from 'react-redux'
 import { cleanupRoleScreen, setNavigation } from '../../../../redux/Reducer/roleReducer/roleSlice'
 
-const Appointment = ({ screens, id }) => {
-  const [appointmentScreens, setAppointmentScreens] = useState([])
+const Coach = ({ screens, id }) => {
+  const [coachScreen, setCoachScreen] = useState([])
   const [checkAll, setCheckAll] = useState(false)
 
   const selectedNav = useSelector((state) => state.rolesSlice.roleScreen)
@@ -15,20 +15,13 @@ const Appointment = ({ screens, id }) => {
     const dataScreen = screens.map((item) => ({
       ...item,
     }))
-    setAppointmentScreens(dataScreen)
-
-    // (
-    //   setNavigation({
-    //     ...selectedNav,
-    //     AppointmentScreen: dataScreen,
-    //   }),
-    // )
+    setCoachScreen(dataScreen)
   }, [])
 
   const handleChangeCheckbox = (checkIndex) => {
-    if (appointmentScreens[checkIndex].check === true) {
-      const dataScreen = appointmentScreens.map((item) => {
-        if (item.id === appointmentScreens[checkIndex].id) {
+    if (coachScreen[checkIndex].check === true) {
+      const dataScreen = coachScreen.map((item) => {
+        if (item.id === coachScreen[checkIndex].id) {
           return { ...item, check: false }
         }
         return item
@@ -36,13 +29,13 @@ const Appointment = ({ screens, id }) => {
       dispatch(
         setNavigation({
           ...selectedNav,
-          AppointmentScreen: dataScreen,
+          CoachScreen: dataScreen,
         }),
       )
-      setAppointmentScreens(dataScreen)
+      setCoachScreen(dataScreen)
     } else {
-      const dataScreen = appointmentScreens.map((item) => {
-        if (item.id === appointmentScreens[checkIndex].id) {
+      const dataScreen = coachScreen.map((item) => {
+        if (item.id === coachScreen[checkIndex].id) {
           return { ...item, check: true }
         }
         return item
@@ -51,16 +44,16 @@ const Appointment = ({ screens, id }) => {
       dispatch(
         setNavigation({
           ...selectedNav,
-          AppointmentScreen: dataScreen,
+          CoachScreen: dataScreen,
         }),
       )
 
-      setAppointmentScreens(dataScreen)
+      setCoachScreen(dataScreen)
     }
   }
 
   const handleChangeAllCheckbox = (flag) => {
-    const dataScreen = appointmentScreens.map((item) => ({
+    const dataScreen = coachScreen.map((item) => ({
       ...item,
       check: flag,
     }))
@@ -68,10 +61,10 @@ const Appointment = ({ screens, id }) => {
     dispatch(
       setNavigation({
         ...selectedNav,
-        AppointmentScreen: dataScreen,
+        CoachScreen: dataScreen,
       }),
     )
-    setAppointmentScreens(dataScreen)
+    setCoachScreen(dataScreen)
   }
 
   return (
@@ -81,7 +74,7 @@ const Appointment = ({ screens, id }) => {
         <CRow className="col-10">
           {true && (
             <>
-              {appointmentScreens.map((item, index) => (
+              {coachScreen.map((item, index) => (
                 <CCol sm={3} key={index}>
                   <input
                     name={`r${index}`}
@@ -122,4 +115,4 @@ const Appointment = ({ screens, id }) => {
   )
 }
 
-export default Appointment
+export default Coach

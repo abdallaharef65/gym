@@ -7,14 +7,21 @@ import ReactTable from '../../../components/common/table/ReactTable'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNavigation } from 'src/redux/Reducer/roleReducer/roleSlice'
 import { useNavigate, Link } from 'react-router-dom'
+import { isAuthorizatoin } from '../../../utils/isAuthorization'
 const Role = () => {
+  const navigate = useNavigate()
+  // check role
+  useEffect(() => {
+    const nav = isAuthorizatoin('role')
+    nav && navigate(nav)
+  }, [])
+
   const dispatch = useDispatch()
   const [dataRoles, setDataRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [reRenderData, setReRenderData] = useState(false)
 
   const selectedNav = useSelector((state) => state.rolesSlice.roleScreen)
-  console.log(selectedNav)
   useEffect(() => {
     ;(async () => {
       try {
@@ -54,15 +61,9 @@ const Role = () => {
         accessor: 'index',
         Cell: ({ row }) => (
           <React.Fragment>
-            <Link to={`/addrole?id=${row.original}`}>
+            <Link to={`/addrole?id=${row.original.id}`}>
               {' '}
-              <CButton
-                color="primary"
-                className="me-3"
-                onClick={() => {
-                  console.log(row.original)
-                }}
-              >
+              <CButton color="primary" className="me-3">
                 Edit
               </CButton>
             </Link>
@@ -108,19 +109,15 @@ const Role = () => {
       ) : (
         <>
           <CRow>
-            <CCol sm={11}>
+            <CCol sm={10}>
               <h2>Role </h2>
             </CCol>
-            <CCol sm={1}>
-              <CButton
-                color="success"
-                className="me-3 text-white"
-                // onClick={() => {
-                //   setFlagState(1), handleAddData()
-                // }}
-              >
-                <Link to={'/addrole'}>Add Role</Link>
-              </CButton>
+            <CCol sm={2}>
+              <Link to={'/addrole'}>
+                <CButton color="success" className="me-3 text-white">
+                  Add Role
+                </CButton>
+              </Link>
             </CCol>
           </CRow>
 

@@ -5,6 +5,7 @@ const initialValue = {
   AppointmentScreen: [],
   settingsScreen: [],
   mainScreens: [],
+  CoachScreen: [],
   
 
 

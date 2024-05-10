@@ -30,10 +30,7 @@ const Login = () => {
       setFalgValidation(true)
       if (username && password) {
         let resUser = await addData('login', { email: username.trim(), password: password })
-
         if (resUser.data.success) {
-          // console.log(resUser.data)
-          console.log(resUser.data.data)
           //token
           getInstance.defaults.headers['x-access-token'] = resUser.data.token
           deleteInstance.defaults.headers['x-access-token'] = resUser.data.token
@@ -51,15 +48,12 @@ const Login = () => {
           // navigate('/dashboard')
           const paramRole = `id=${resUser.role_id}`
           const resRole = await selectDataByParam('role', paramRole)
-          console.log(resRole)
 
           if (resRole.no_of_records > 0) {
             // const resMainPage = await selectDataById('screens', resRole.data[0].main_page_id)
             const paramMainPage = `id=${resRole.data[0].main_page_id}`
             const resMainPage = await selectDataByParam('screens', paramMainPage)
-            console.log(resMainPage)
             if (resMainPage.no_of_records > 0) {
-              console.log(resMainPage.data[0].screen_route)
               navigate(`/${resMainPage.data[0].screen_route}`)
             }
           }

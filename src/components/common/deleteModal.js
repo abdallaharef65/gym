@@ -15,7 +15,7 @@ import {
   CToast,
   CToastBody,
 } from '@coreui/react'
-import {  deleteDataByParam } from '../../helper/Api'
+import { deleteDataByParam } from '../../helper/Api'
 
 const DeleteModal = ({ visible, setVisible, Title, route, id, reRenderData, setReRenderData }) => {
   ////
@@ -27,7 +27,7 @@ const DeleteModal = ({ visible, setVisible, Title, route, id, reRenderData, setR
   const saveData = async () => {
     if (true) {
       try {
-        var res = await deleteDataByParam('user', id, 'id')
+        var res = await deleteDataByParam(route, id, 'id')
         console.log(res)
         if (res.success) {
           setFalgToast(true)
@@ -53,7 +53,7 @@ const DeleteModal = ({ visible, setVisible, Title, route, id, reRenderData, setR
   return (
     <React.Fragment>
       <CModal
-        size="xl"
+        // size="lg"
         visible={visible}
         onClose={() => {
           setVisible(false)
@@ -80,7 +80,7 @@ const DeleteModal = ({ visible, setVisible, Title, route, id, reRenderData, setR
         <React.Fragment>
           <CModalBody>
             <CRow>
-              <CCol sm={6}> {`are you sure you want delete this ${Title} ? `}</CCol>
+              <CCol sm={12}> {`are you sure you want delete this ${Title} ? `}</CCol>
             </CRow>
           </CModalBody>
         </React.Fragment>
@@ -95,7 +95,7 @@ const DeleteModal = ({ visible, setVisible, Title, route, id, reRenderData, setR
             Close
           </CButton>
           <CButton color="primary" onClick={() => saveData()}>
-            Save{' '}
+            Delete{' '}
           </CButton>
         </CModalFooter>
       </CModal>

@@ -1,48 +1,52 @@
 /* eslint-disable */
 import React, { useState } from 'react'
-
 import { useDispatch, useSelector } from 'react-redux'
-// import { CTabs, CTabContent, CTabPane, CNav, CNavItem, CNavLink } from '@coreui/react';
-
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import ReactSelect from 'react-select'
-// import GeneralRoles from './component/GeneralRoles'
 import AppointmentRoles from './component/Appointment'
 import SettingsRoles from './component/settings'
-import MainScreensRoles from './component/mainScreens'
-
+import Coach from './component/Coach'
 import { addData } from 'src/helper'
-import { cleanupRoleScreen, setNavigation } from '../../../redux/Reducer/roleReducer/roleSlice'
-import { CForm, CRow, CCol, CFormLabel, CButton, CFormInput } from '@coreui/react'
+import {
+  CForm,
+  CRow,
+  CCol,
+  CFormLabel,
+  CButton,
+  CFormInput,
+  CToastBody,
+  CToast,
+} from '@coreui/react'
 import { Tabs, Tab } from 'react-bootstrap'
-import { getData } from '../../../helper'
-import { Link } from 'react-router-dom'
-//src/redux/Reducer/roleReducer/roleSlice
-// import { cleanupReadDataFlag } from 'src/redux/Reducer/StorageDataForEditRoleReducer/StorageDataForEditRoleReducerFlagSlice'
-// import { addData } from 'src/helper'
+import { deleteDataByParam, getData, selectDataByParam } from '../../../helper'
+import { isAuthorizatoin } from '../../../utils/isAuthorization'
 
 const AddRole = () => {
   const [searchParams] = useSearchParams()
   let id = searchParams.get('id')
-  console.log(id)
 
-  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  // check role
+  useEffect(() => {
+    const nav = isAuthorizatoin('role')
+    nav && navigate(nav)
+  }, [])
+  const selectedNav = useSelector((state) => state.rolesSlice.roleScreen)
+
   const [activeKey, setActiveKey] = useState(1)
   const [selectedPages, setSelectedPages] = useState()
-  console.log(selectedPages)
   const [roleName, setRoleName] = useState()
-  const [mainPage, setMainPage] = useState()
-  const [disableButton, setDisableButton] = useState(false)
-  const [toastText, setToastText] = useState(null)
-  const [toast, addToast] = useState(false)
-  const [num, setNum] = useState()
-  const [selectedMainPage, setSelectedMainPage] = useState()
+  const [mainPage, setMainPage] = useState({ value: null, label: null })
+  const [validationField, setValidationField] = useState(false)
   const [allScreens, setAllScreens] = useState([])
   const [loadingPages, setLoadingPages] = useState(false)
-  const selectedNav = useSelector((state) => state.rolesSlice.roleScreen)
+  ////
+  const [falgToast, setFalgToast] = useState(false)
+  const [textToast, setTextToast] = useState('Saved successfully')
+  const [colorToast, setColorToast] = useState('success')
 
   const {
     register,
@@ -55,9 +59,34 @@ const AddRole = () => {
     ;(async () => {
       try {
         setLoadingPages(false)
+        var resAllScreenScreens = await getData(`screens?limit=1000`)
+        var resRoleScreens = []
+        var checkresRoleScreens = false
+        if (id) {
+          checkresRoleScreens = true
+          const paramRole = `id=${id}`
+          const resRole = await selectDataByParam('role', paramRole)
+          setMainPage({
+            value: resRole.data[0].main_page_id,
+            label: resRole.data[0].screen_name_en,
+          })
+          setRoleName(resRole.data[0].role)
+          //main_page_id
+          resRoleScreens = await getData(`role_screens?role_id=${id}`)
 
-        var resRoleScreens = await getData('screens')
-        setAllScreens(resRoleScreens.data)
+          //   setAllScreens(resRoleScreens.data)
+        }
+
+        setAllScreens(
+          resAllScreenScreens.data.map((item) => ({
+            ...item,
+            check: checkresRoleScreens
+              ? resRoleScreens.data.filter((x) => x.screen_id == item.id).length > 0
+                ? true
+                : false
+              : false,
+          })),
+        )
 
         setTimeout(() => {
           setLoadingPages(true)
@@ -71,59 +100,74 @@ const AddRole = () => {
     })()
   }, [])
 
-  const onSubmit = async () => {
-    // setDisableButton(true)
-    // setToastText(null)
-    // addToast(false)
-    // let tempArr = [
-    //   ...selectedNav.AppointmentScreen,
-    //   ...selectedNav.DoctorScreen,
-    //   ...selectedNav.FinancialScreen,
-    //   ...selectedNav.GeneralScreen,
-    //   ...selectedNav.ItemScreen,
-    //   ...selectedNav.ScheduleScreen,
-    //   ...selectedNav.ServiceScreen,
-    //   ...selectedNav.SettingScreen,
-    //   ...selectedNav.PatientScreen,
-    // ]
-    // // const screens = tempArr.map((i) => i.id)
-    // const bodyData = {
-    //   role: roleName,
-    //   main_page_id: mainPage,
-    //   screens: tempArr.map((i) => i.id),
-    // }
-    // try {
-    //   const res = await addData('role_screens', bodyData)
-    //   addToast(true)
-    //   setToastText('Add Done Successfully')
-    //   setTimeout(async () => {
-    //     navigate(-1)
-    //   }, 1500)
-    // } catch (err) {
-    //   console.error(err.message)
-    //   if (err.message.includes('401')) {
-    //     dispatch(showTokenModal({ showModal: true }))
-    //   }
-    // }
-    // setDisableButton(false)
-  }
-  //   useEffect(() => {
-  //     dispatch(cleanupRoleScreen())
-  //     const nav = isAuthorizatoin('/roles')
-  //     nav && navigate(nav)
-  //   }, [])
+  const onSubmit = async () => {}
+
   useEffect(() => {
-    setSelectedPages([
+    const selectedData = [
       ...selectedNav.mainScreens,
       ...selectedNav.settingsScreen,
       ...selectedNav.AppointmentScreen,
-    ])
-  }, [selectedNav])
-  // useEffect(() => {
-  //   dispatch(cleanupRoleScreen())
-  // }, [])
+      ...selectedNav.CoachScreen,
+    ].filter((x) => x.check == true)
+
+    setSelectedPages(selectedData)
+
+    if (selectedData.length == 0) {
+      setMainPage({ value: null, label: null })
+    } else if (mainPage.value) {
+      if (selectedData.filter((v) => v.id == mainPage.value).length == 0) {
+        setMainPage({ value: null, label: null })
+      }
+    }
+  }, [
+    selectedNav.mainScreens,
+    selectedNav.settingsScreen,
+    selectedNav.CoachScreen,
+    selectedNav.AppointmentScreen,
+  ])
   const handleChangeMainPage = (e) => {
-    setMainPage(e.value)
+    setMainPage(e)
+  }
+
+  const SaveRoleData = async () => {
+    setValidationField(true)
+    let tempArr = [
+      ...selectedNav.AppointmentScreen,
+      ...selectedNav.settingsScreen,
+      ...selectedNav.CoachScreen,
+    ].filter((x) => x.check == true)
+    if (mainPage.value && roleName) {
+      const bodyData = {
+        id: id,
+        role: roleName,
+        main_page_id: mainPage.value,
+        screens: tempArr.map((i) => i.id),
+      }
+      if (!id) {
+        const { id, ...newObj } = bodyData
+
+        var res = await addData('role_screens', newObj)
+      } else {
+        const deleteRole = await deleteDataByParam('role_screens', id, 'role_id')
+        var res = await addData('role_screens', bodyData)
+      }
+      if (res.data.success) {
+        setValidationField(false)
+        setFalgToast(true)
+        setColorToast('success')
+        setTextToast('Saved successfully')
+        setTimeout(() => {
+          navigate('/role')
+        }, 3000)
+      } else {
+        setFalgToast(true)
+        setColorToast('danger')
+        setTextToast('Error')
+      }
+      setTimeout(() => {
+        setFalgToast(false)
+      }, 4000)
+    }
   }
   return (
     <div>
@@ -149,6 +193,8 @@ const AddRole = () => {
                   defaultValue={roleName}
                   onChange={(e) => setRoleName(e.target.value)}
                 />
+
+                {validationField && !roleName && <p style={{ color: 'red' }}>Required field</p>}
               </CCol>
             </CRow>
             <CRow>
@@ -162,10 +208,7 @@ const AddRole = () => {
                 className="mb-3"
               >
                 <Tab eventKey="1" title="Settings">
-                  <SettingsRoles
-                    screens={allScreens.filter((x) => x.group_screen_id == 3)}
-                    id={id}
-                  />
+                  <SettingsRoles screens={allScreens} id={id} />
                 </Tab>
                 <Tab eventKey="2" title="Appointment ">
                   <AppointmentRoles
@@ -173,29 +216,25 @@ const AddRole = () => {
                     id={id}
                   />
                 </Tab>
-                <Tab eventKey="3" title="Main Screens">
-                  <MainScreensRoles
-                    screens={allScreens.filter((x) => x.group_screen_id == 1)}
-                    id={id}
-                  />
+                <Tab eventKey="3" title="Coach Screens">
+                  <Coach screens={allScreens.filter((x) => x.group_screen_id == 4)} id={id} />
                 </Tab>
               </Tabs>
             </div>
             <CRow className="my-5">
               <CCol sm={6}>
-                <CFormLabel>الشاشة الرئيسية لهذا الدور</CFormLabel>
+                <CFormLabel>Home screen for this role</CFormLabel>
                 {selectedPages && (
                   <>
                     <Controller
                       name=""
                       id=""
                       // rules={{ required: true }}
-                      defaultValue={mainPage}
+                      value={mainPage}
                       control={control}
                       render={({ field: { onChange } }) => (
                         <ReactSelect
-                          defaultValue={mainPage}
-                          // placeholder="اختر ..... "
+                          value={mainPage}
                           options={selectedPages.map((item) => ({
                             value: item.id,
                             label: item.screen_name_en,
@@ -206,41 +245,49 @@ const AddRole = () => {
                         />
                       )}
                     />
-                    <input
-                      tabIndex={-1}
-                      autoComplete="off"
-                      style={{ opacity: 0, height: 0, position: 'absolute' }}
-                      defaultValue={mainPage ? mainPage : ''}
-                      required
-                    />
                   </>
+                )}
+                {validationField && !mainPage.value && (
+                  <p style={{ color: 'red' }}>Required field</p>
                 )}
               </CCol>
             </CRow>
-            {/* <Toast className="m-2 " autohide={false} show={toast} bg="success">
-          <div className="d-flex">
-            <Toast.Body>{toastText}</Toast.Body>
-          </div>
-        </Toast>
 
-        <Row className="mx-3 my-5">
-          <Col sm="auto">
-            <Button variant="success" type="submit" disabled={disableButton}>
-              save
-            </Button>
-          </Col>
-          <Col sm="auto">
-            <Button
-              disabled={disableButton}
-              variant="secondary"
-              onClick={() => {
-                navigate(-1)
-              }}
-            >
-              cancel
-            </Button>
-          </Col>
-        </Row> */}{' '}
+            <CRow className="mx-3 my-5">
+              <CCol sm="auto">
+                <CButton
+                  onClick={() => SaveRoleData()}
+                  style={{
+                    color: 'white',
+                  }}
+                  color="success"
+                  type="submit"
+                >
+                  Save
+                </CButton>
+              </CCol>
+              <CCol sm="auto">
+                <CButton
+                  color="secondary"
+                  onClick={() => {
+                    navigate('/role')
+                  }}
+                >
+                  Cancel
+                </CButton>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CToast
+                className="mx-2"
+                animation={false}
+                autohide={false}
+                visible={falgToast}
+                color={colorToast}
+              >
+                <CToastBody>{textToast}</CToastBody>
+              </CToast>
+            </CRow>
           </>
         )}
       </CForm>

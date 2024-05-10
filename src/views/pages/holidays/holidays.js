@@ -4,25 +4,16 @@ import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/reac
 
 import { getData } from '../../../helper/index'
 import ReactTable from '../../../components/common/table/ReactTable'
-// import HallModal from './modalForm'
+import HallModal from './modalForm'
 import DeleteModal from '../../../components/common/deleteModal'
 import { isAuthorizatoin } from '../../../utils/isAuthorization'
 import { useNavigate } from 'react-router-dom'
-//Calendar
-// import FullCalendar from '@fullcalendar/react'
-// import dayGridPlugin from '@fullcalendar/daygrid'
-// import timeGridPlugin from '@fullcalendar/timegrid'
-// import interactionPlugin from '@fullcalendar/interaction'
 
-// import '@fullcalendar/core/main.css'
-// import '@fullcalendar/daygrid/main.css'
-// import '@fullcalendar/timegrid/main.css'
-
-const Calendar = () => {
+const Holidays = () => {
   const navigate = useNavigate()
   // check role
   useEffect(() => {
-    const nav = isAuthorizatoin('calendar')
+    const nav = isAuthorizatoin('holidays')
     nav && navigate(nav)
   }, [])
 
@@ -121,20 +112,6 @@ const Calendar = () => {
       }
     })()
   }, [reRenderData])
-
-  const events = [
-    { title: 'Event 1', date: '2024-05-01', color: 'red' },
-    { title: 'Event 2', date: '2024-05-05', color: 'blue' },
-    { title: 'Event 3', date: '2024-05-10', color: 'green' },
-  ]
-
-  const eventContent = (arg) => {
-    return (
-      <div style={{ backgroundColor: arg.event.backgroundColor }}>
-        {arg.timeText} - {arg.event.title}
-      </div>
-    )
-  }
   return (
     <React.Fragment>
       {/* <HallModal
@@ -172,7 +149,7 @@ const Calendar = () => {
         <>
           <CRow>
             <CCol sm={11}>
-              <h2>Calendar </h2>
+              <h2>Holidays </h2>
             </CCol>
             <CCol sm={1}>
               <CButton
@@ -188,13 +165,6 @@ const Calendar = () => {
           </CRow>
 
           <CRow>
-            {/* <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
-              events={events}
-              eventContent={eventContent}
-            /> */}
-
             {/* <CRow>
               <ReactTable data={dataHolidays} columns={columns} />
             </CRow> */}
@@ -205,4 +175,4 @@ const Calendar = () => {
   )
 }
 
-export default Calendar
+export default Holidays
