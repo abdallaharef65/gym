@@ -42,7 +42,7 @@ const Role = () => {
 
         setTimeout(() => {
           setLoading(false)
-        }, 500)
+        }, 1000)
       } catch (err) {
         console.log(err)
       }
@@ -98,7 +98,7 @@ const Role = () => {
         dataForEdit={dataForEdit}
       /> */}
 
-      {false ? (
+      {loading ? (
         <CRow className="mt-5">
           <CCol sm={5}></CCol>
           <CCol sm={2}>

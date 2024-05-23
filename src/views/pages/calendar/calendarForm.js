@@ -53,6 +53,7 @@ const initialState = {
   title: null,
   hall_name: null,
   user_name: null,
+  backgroundColor: '#ffffff',
 }
 const CalendarForm = ({
   visible,
@@ -103,6 +104,17 @@ const CalendarForm = ({
     { id: 5, label: 'Friday' },
   ])
   //CToast
+
+  function formatDate(isoString) {
+    const date = new Date(isoString)
+
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are zero-indexed
+    const day = String(date.getUTCDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+  }
+
   useEffect(() => {
     setAppsQtys([])
     if (flagState > 0) {
@@ -130,12 +142,17 @@ const CalendarForm = ({
 
           //updateState
           if (flagState == 2) {
-            var startTime = dataForEdit.appointments_date + ' ' + dataForEdit.appointments_start
-            var endTime = dataForEdit.appointments_date + ' ' + dataForEdit.appointments_end
+            var startTime =
+              formatDate(dataForEdit.appointments_date) + ' ' + dataForEdit.appointments_start
+            var endTime =
+              formatDate(dataForEdit.appointments_date) + ' ' + dataForEdit.appointments_end
+
             handleChangeEndDate(new Date(endTime))
             handleChangeStartDate(new Date(startTime))
+
             setMainState((current) => ({
               ...current,
+              backgroundColor: dataForEdit.color,
               id: dataForEdit.id,
               hall_id: dataForEdit.hall_id,
               hall_name: dataForEdit.hall_name,
@@ -175,7 +192,7 @@ const CalendarForm = ({
     if (mainState.user_id && mainState.title && mainState.hall_id) {
       if (flagState == 2) {
         const bodyDataUpdate = {
-          appointments_date: start.toISOString().split('T')[0],
+          appointments_date: start,
           appointments_start: start.toLocaleTimeString('en-US', { hour12: false }),
           appointments_end: end.toLocaleTimeString('en-US', { hour12: false }),
           user_id: mainState.user_id,
@@ -188,8 +205,8 @@ const CalendarForm = ({
           var bodyDataBulk = []
           for (let i = 0; i < appsQtys.length; i++) {
             bodyDataBulk.push({
-              appointments_end: appsQtys[i].endTime.slice(0, -2),
-              appointments_start: appsQtys[i].startTime.slice(0, -2),
+              appointments_end: appsQtys[i].endTime,
+              appointments_start: appsQtys[i].startTime,
               appointments_date: appsQtys[i].appointmentDate,
               user_id: mainState.user_id,
               title: mainState.title,
@@ -197,6 +214,7 @@ const CalendarForm = ({
             })
           }
 
+          console.log(bodyDataBulk)
           if (flagReCurrentAgain && appsQtys.length > 0) {
             res = await addData('appointmentsbulk', bodyDataBulk)
           } else {
@@ -211,9 +229,9 @@ const CalendarForm = ({
               end.toLocaleTimeString('en-US', { hour12: false }).slice(0, -2)
           ) {
             const bodyDataBulk = {
-              appointments_date: start.toISOString().split('T')[0],
-              appointments_start: start.toLocaleTimeString('en-US', { hour12: false }).slice(0, -2),
-              appointments_end: end.toLocaleTimeString('en-US', { hour12: false }).slice(0, -2),
+              appointments_date: start,
+              appointments_start: start.toLocaleTimeString('en-US', { hour12: false }),
+              appointments_end: end.toLocaleTimeString('en-US', { hour12: false }),
               user_id: mainState.user_id,
               title: mainState.title,
               hall_id: mainState.hall_id,
@@ -495,7 +513,7 @@ const CalendarForm = ({
                   />
                 </div>
                 <CCol>
-                  <CFormLabel>
+                  <CFormLabel style={{ backgroundColor: `${mainState.backgroundColor}` }}>
                     Halls: <span className="text-danger">*</span>
                   </CFormLabel>
                   <ReactSelect
@@ -504,6 +522,7 @@ const CalendarForm = ({
                     onChange={(e) => {
                       setMainState((current) => ({
                         ...current,
+                        backgroundColor: e.color,
                         hall_id: e.value,
                         hall_name: e.label,
                       }))

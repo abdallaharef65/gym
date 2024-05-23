@@ -76,6 +76,17 @@ const Calendar = () => {
 
     return isoDatetime
   }
+
+  function formatDate(isoString) {
+    const date = new Date(isoString)
+
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are zero-indexed
+    const day = String(date.getUTCDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+  }
+
   useEffect(() => {
     ;(async () => {
       try {
@@ -107,13 +118,16 @@ const Calendar = () => {
         filterData.push(
           ...res.data.map((item, index) => ({
             title: item.title,
-            start: convertDatetime(`${item.appointments_date} ${item.appointments_start}`),
-            end: convertDatetime(`${item.appointments_date} ${item.appointments_end}`),
+            start: convertDatetime(
+              `${formatDate(item.appointments_date)} ${item.appointments_start}`,
+            ),
+            end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
             color: item.color,
             publicId: item.id,
             resourceId: item.user_id,
           })),
         )
+
         setEvents(filterData)
         setTimeout(() => {
           setLoading(false)
@@ -179,8 +193,8 @@ const Calendar = () => {
       filterData.push(
         ...res.data.map((item) => ({
           title: item.title,
-          start: convertDatetime(`${item.appointments_date} ${item.appointments_start}`),
-          end: convertDatetime(`${item.appointments_date} ${item.appointments_end}`),
+          start: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_start}`),
+          end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
           color: item.color,
           publicId: item.id,
           resourceId: item.user_id,
@@ -219,8 +233,8 @@ const Calendar = () => {
       filterData.push(
         ...res.data.map((item) => ({
           title: item.title,
-          start: convertDatetime(`${item.appointments_date} ${item.appointments_start}`),
-          end: convertDatetime(`${item.appointments_date} ${item.appointments_end}`),
+          start: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_start}`),
+          end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
           color: item.color,
           publicId: item.id,
           resourceId: item.user_id,
