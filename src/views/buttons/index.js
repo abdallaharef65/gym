@@ -11,7 +11,6 @@ const Buttons = () => {
     ;(async () => {
       try {
         // Make a GET request to the API endpoint
-        const response = await axios.get('http://localhost:3001/bills')
 
         console.log(response)
         // Update state with the fetched data
@@ -24,7 +23,7 @@ const Buttons = () => {
       }
     })()
   }, [])
-  
+
   return (
     <CRow>
       <CCol xs={12}>

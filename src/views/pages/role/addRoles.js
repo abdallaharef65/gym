@@ -216,7 +216,7 @@ const AddRole = () => {
                     id={id}
                   />
                 </Tab>
-                <Tab eventKey="3" title="Coach Screens">
+                <Tab eventKey="3" title="Teacher">
                   <Coach screens={allScreens.filter((x) => x.group_screen_id == 4)} id={id} />
                 </Tab>
               </Tabs>

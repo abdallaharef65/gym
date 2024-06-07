@@ -194,6 +194,7 @@ const UsersModal = ({
                       }))
                     }}
                   />
+
                   {falgValidation && !mainState.first_name && (
                     <p style={{ color: 'red' }}>Required field</p>
                   )}

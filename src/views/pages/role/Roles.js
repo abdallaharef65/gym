@@ -10,11 +10,6 @@ import { useNavigate, Link } from 'react-router-dom'
 import { isAuthorizatoin } from '../../../utils/isAuthorization'
 const Role = () => {
   const navigate = useNavigate()
-  // check role
-  useEffect(() => {
-    const nav = isAuthorizatoin('role')
-    nav && navigate(nav)
-  }, [])
 
   const dispatch = useDispatch()
   const [dataRoles, setDataRoles] = useState([])
@@ -22,32 +17,41 @@ const Role = () => {
   const [reRenderData, setReRenderData] = useState(false)
 
   const selectedNav = useSelector((state) => state.rolesSlice.roleScreen)
-  useEffect(() => {
-    ;(async () => {
-      try {
-        dispatch(
-          setNavigation({
-            ...selectedNav,
-            AppointmentScreen: [{ id: 1 }],
-          }),
-        )
-        // Make a GET request to the API endpoint
-        setLoading(true)
-        const res = await getData('role')
-        setDataRoles(
-          res.data.map((item) => ({
-            ...item,
-          })),
-        )
 
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
-      } catch (err) {
-        console.log(err)
-      }
-    })()
+  // check role
+  useEffect(() => {
+    const nav = isAuthorizatoin('role')
+    if (nav) {
+      navigate(nav)
+    } else {
+      handllerGetData()
+    }
   }, [reRenderData])
+
+  const handllerGetData = async () => {
+    try {
+      dispatch(
+        setNavigation({
+          ...selectedNav,
+          AppointmentScreen: [{ id: 1 }],
+        }),
+      )
+      // Make a GET request to the API endpoint
+      setLoading(true)
+      const res = await getData('role')
+      setDataRoles(
+        res.data.map((item) => ({
+          ...item,
+        })),
+      )
+
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const columns = React.useMemo(
     () => [

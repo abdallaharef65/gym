@@ -11,6 +11,7 @@ const Roles = React.lazy(() => import('./views/pages/role/Roles'))
 const RolesAddForm = React.lazy(() => import('./views/pages/role/addRoles'))
 const Halls = React.lazy(() => import('./views/pages/Halls/halls'))
 const Holidays = React.lazy(() => import('./views/pages/holidays/holidays'))
+const Courses = React.lazy(() => import('./views/pages/courses/courses'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -22,6 +23,7 @@ const routes = [
   { path: '/addrole', name: 'Role', element: RolesAddForm, exact: true },
   { path: '/halls', name: 'Halls', element: Halls, exact: true },
   { path: '/holidays', name: 'Holidays', element: Holidays, exact: true },
+  { path: '/courses', name: 'courses', element: Courses, exact: true },
 ]
 
 export default routes

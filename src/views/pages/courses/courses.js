@@ -4,15 +4,15 @@ import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/reac
 
 import { getData } from '../../../helper/index'
 import ReactTable from '../../../components/common/table/ReactTable'
-import HallModal from './modalForm'
+import CoursesModal from './modalForm'
 import DeleteModal from '../../../components/common/deleteModal'
 import { isAuthorizatoin } from '../../../utils/isAuthorization'
 import { useNavigate } from 'react-router-dom'
 
-const Halls = () => {
+const Courses = () => {
   const navigate = useNavigate()
 
-  const [dataHalls, setDataHalls] = useState([])
+  const [dataCourses, setDataCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [visibleModale, setVisibleModale] = useState(false)
   const [reRenderData, setReRenderData] = useState(false)
@@ -22,28 +22,43 @@ const Halls = () => {
   const [dataForEdit, setDataForEdit] = useState({})
   const [rowIdForDekete, setRowIdForDekete] = useState({})
 
+  const [weekdays, setWeekDays] = useState([
+    { id: 6, label: 'Saturday' },
+    { id: 0, label: 'Sunday' },
+    { id: 1, label: 'Monday' },
+    { id: 2, label: 'Tuesday' },
+    { id: 3, label: 'Wednesday' },
+    { id: 4, label: 'Thursday' },
+    { id: 5, label: 'Friday' },
+  ])
+
   //test commit 1
   const columns = [
     {
-      Header: 'id',
+      Header: 'Id',
       accessor: 'id',
     },
     {
-      Header: 'Hall Name',
+      Header: 'Teacher',
+      accessor: 'teacher_name',
+    },
+
+    {
+      Header: 'Course name',
+      accessor: 'course_name',
+    },
+    {
+      Header: 'Hall',
       accessor: 'hall_name',
     },
-    // {
-    //   Header: 'Password',
-    //   accessor: 'password',
-    // },
     {
-      Header: () => 'Color',
-      accessor: 'color',
-      Cell: ({ row }) => (
-        <span style={{ width: '20px', height: '20px', backgroundColor: `${row.original.color}` }}>
-          {row.original.color}
-        </span>
-      ),
+      Header: 'Days',
+      accessor: 'dayText',
+    },
+
+    {
+      Header: 'Tims',
+      accessor: 'time',
     },
 
     {
@@ -86,25 +101,38 @@ const Halls = () => {
     setRowIdForDekete(row.original.id)
     setVisibleDeleteModale(true)
   }
+  const DayText = (days) => {
+    // console.log('i am here')
+    var day = ''
+    for (let i = 0; i < days.length; i++) {
+      day += weekdays.filter((x) => x.id == days[i])[0].label + ',' + ' '
+    }
+
+    return day
+  }
 
   // check role
   useEffect(() => {
-    const nav = isAuthorizatoin('halls')
+    const nav = isAuthorizatoin('courses')
     if (nav) {
       navigate(nav)
     } else {
       handllerGetData()
     }
   }, [reRenderData])
+
   const handllerGetData = async () => {
     try {
       // Make a GET request to the API endpoint
       setLoading(true)
-      const res = await getData('halls')
-      setDataHalls(
+      const res = await getData('courses')
+
+      setDataCourses(
         res.data.map((item) => ({
           ...item,
-          name: item.first_name + ' ' + item.last_name,
+          dayText: DayText(item.days),
+          teacher_name: item.first_name + ' ' + item.last_name,
+          time: item.begin_time + ' - ' + item.end_time,
         })),
       )
 
@@ -118,7 +146,7 @@ const Halls = () => {
 
   return (
     <React.Fragment>
-      <HallModal
+      <CoursesModal
         setReRenderData={setReRenderData}
         reRenderData={reRenderData}
         visible={visibleModale}
@@ -133,8 +161,8 @@ const Halls = () => {
         setVisible={setVisibleDeleteModale}
         setReRenderData={setReRenderData}
         reRenderData={reRenderData}
-        Title={'Halls'}
-        route={'halls'}
+        Title={'Course'}
+        route={'courses'}
         id={rowIdForDekete}
         flagState={flagState}
         setFlagState={setFlagState}
@@ -153,7 +181,7 @@ const Halls = () => {
         <>
           <CRow>
             <CCol sm={11}>
-              <h2>Halls </h2>
+              <h2>Courses </h2>
             </CCol>
             <CCol sm={1}>
               <CButton
@@ -170,7 +198,7 @@ const Halls = () => {
 
           <CRow>
             <CRow>
-              <ReactTable data={dataHalls} columns={columns} />
+              <ReactTable data={dataCourses} columns={columns} />
             </CRow>
           </CRow>
         </>
@@ -179,4 +207,4 @@ const Halls = () => {
   )
 }
 
-export default Halls
+export default Courses

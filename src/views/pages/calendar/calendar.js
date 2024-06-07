@@ -3,9 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
 
 import { getData, selectDataByParam } from '../../../helper/index'
-import ReactTable from '../../../components/common/table/ReactTable'
-// import HallModal from './modalForm'
-import DeleteModal from '../../../components/common/deleteModal'
 import { isAuthorizatoin } from '../../../utils/isAuthorization'
 import { useNavigate } from 'react-router-dom'
 //Calendar
@@ -23,11 +20,6 @@ import CalendarForm from './calendarForm'
 
 const Calendar = () => {
   const navigate = useNavigate()
-  // check role
-  useEffect(() => {
-    const nav = isAuthorizatoin('calendar')
-    nav && navigate(nav)
-  }, [])
 
   const [usersSelect, setUsersSelect] = useState([])
   const [usersResources, setUsersResources] = useState([])
@@ -42,8 +34,6 @@ const Calendar = () => {
   const [loading, setLoading] = useState(true)
   const [visibleModale, setVisibleModale] = useState(false)
   const [reRenderData, setReRenderData] = useState(false)
-
-  const [visibleDeleteModale, setVisibleDeleteModale] = useState(false)
   const [selectedInfo, setSelectedInfo] = useState({
     start: null,
     end: null,
@@ -51,20 +41,6 @@ const Calendar = () => {
 
   const [flagState, setFlagState] = useState(0)
   const [dataForEdit, setDataForEdit] = useState({})
-  const [rowIdForDekete, setRowIdForDekete] = useState({})
-
-  const handleAddData = () => {
-    setVisibleModale(true)
-  }
-  const handleEditData = (row) => {
-    setDataForEdit(row.original)
-    setVisibleModale(true)
-  }
-
-  const handleShowDeleteModal = (row) => {
-    setRowIdForDekete(row.original.id)
-    setVisibleDeleteModale(true)
-  }
 
   const convertDatetime = (originalDatetime) => {
     // Extract the year, month, and day from the original datetime string
@@ -87,105 +63,83 @@ const Calendar = () => {
     return `${year}-${month}-${day}`
   }
 
+  // check role
   useEffect(() => {
-    ;(async () => {
-      try {
-        // Make a GET request to the API endpoint
-        setLoading(true)
-
-        let user = await getData('user')
-        let USelect = user.data.map((e) => ({
-          value: e.id,
-          label: e.first_name + ' ' + e.last_name,
-        }))
-        setUsersSelect([{ value: -1, label: 'Select All' }, ...USelect])
-
-        setUsersData({
-          value: user.data[0].id,
-          label: user.data[0].first_name + ' ' + user.data[0].last_name,
-        })
-        setUsersResources([
-          {
-            id: user.data[0].id,
-            title: user.data[0].first_name + ' ' + user.data[0].last_name,
-          },
-        ])
-
-        const param = `user_id=${user.data[0].id}`
-        let res = await selectDataByParam('appointments', param)
-        //user.data[0].id
-        var filterData = []
-        filterData.push(
-          ...res.data.map((item, index) => ({
-            title: item.title,
-            start: convertDatetime(
-              `${formatDate(item.appointments_date)} ${item.appointments_start}`,
-            ),
-            end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
-            color: item.color,
-            publicId: item.id,
-            resourceId: item.user_id,
-          })),
-        )
-
-        setEvents(filterData)
-        setTimeout(() => {
-          setLoading(false)
-        }, 500)
-      } catch (err) {
-        console.log(err)
-      }
-    })()
+    const nav = isAuthorizatoin('calendar')
+    if (nav) {
+      navigate(nav)
+    } else {
+      handllerGetData()
+    }
   }, [reRenderData])
 
-  const handleSelected = async (info) => {
-    //timeGridWeek
+  const handllerGetData = async () => {
+    try {
+      // Make a GET request to the API endpoint
+      setLoading(true)
 
+      let user = await getData('user')
+      let USelect = user.data.map((e) => ({
+        value: e.id,
+        label: e.first_name + ' ' + e.last_name,
+      }))
+      setUsersSelect([{ value: -1, label: 'Select All' }, ...USelect])
+
+      setUsersData({
+        value: user.data[0].id,
+        label: user.data[0].first_name + ' ' + user.data[0].last_name,
+      })
+      setUsersResources([
+        {
+          id: user.data[0].id,
+          title: user.data[0].first_name + ' ' + user.data[0].last_name,
+        },
+      ])
+
+      const param = `user_id=${user.data[0].id}`
+      let res = await selectDataByParam('appointments', param)
+      //user.data[0].id
+      var filterData = []
+      filterData.push(
+        ...res.data.map((item, index) => ({
+          title: item.title,
+          start: convertDatetime(
+            `${formatDate(item.appointments_date)} ${item.appointments_start}`,
+          ),
+          end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
+          color: item.color,
+          publicId: item.id,
+          resourceId: item.user_id,
+        })),
+      )
+
+      setEvents(filterData)
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleSelected = async (info) => {
     if (info.view.type === 'resourceTimeGridDay') {
       setSelectedInfo({
         start: info.start,
         end: info.end,
       })
-      // dispatch(showDetailsModal())
     } else {
       setSelectedInfo({
         start: info.start,
         end: info.end,
       })
-      // if (doctorData && doctorData.value != null && doctorData.value != -1) {
-      //   setSelectedInfo(info)
-      //   dispatch(showDetailsModal())
-      // } else {
-      //   setRequiredText('please select doctor')
-      // }
     }
 
     setFlagState(1)
     setVisibleModale(true)
   }
-  const handleMouseEnter = (info) => {
-    // if (info.event.extendedProps.doctor_name) {
-    //   tooltipInstance = new Tooltip(info.el, {
-    //     title: info.event.extendedProps.doctor_name,
-    //     html: true,
-    //     placement: 'top',
-    //     trigger: 'hover',
-    //     container: 'body',
-    //   })
-    //   tooltipInstance.show()
-    // }
-  }
-
-  const handleMouseLeave = (info) => {
-    // if (tooltipInstance) {
-    //   tooltipInstance.dispose()
-    //   tooltipInstance = null
-    // }
-  }
 
   const handleChangeUsers = async (e) => {
-    // setFlagSelected(false)
-    // setRequiredText(null)
     if (e.value != -1) {
       const param = `user_id=${e.value}`
       let res = await selectDataByParam('appointments', param)
@@ -193,7 +147,9 @@ const Calendar = () => {
       filterData.push(
         ...res.data.map((item) => ({
           title: item.title,
-          start: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_start}`),
+          start: convertDatetime(
+            `${formatDate(item.appointments_date)} ${item.appointments_start}`,
+          ),
           end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
           color: item.color,
           publicId: item.id,
@@ -233,7 +189,9 @@ const Calendar = () => {
       filterData.push(
         ...res.data.map((item) => ({
           title: item.title,
-          start: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_start}`),
+          start: convertDatetime(
+            `${formatDate(item.appointments_date)} ${item.appointments_start}`,
+          ),
           end: convertDatetime(`${formatDate(item.appointments_date)} ${item.appointments_end}`),
           color: item.color,
           publicId: item.id,
@@ -245,9 +203,6 @@ const Calendar = () => {
   }
 
   const handleEventClicked = async (id) => {
-    // console.log(id)
-    // let res = await getData('appointments')
-
     const param = `id=${id.publicId}`
     let res = await selectDataByParam('appointments', param)
     setDataForEdit(res.data[0])
@@ -267,20 +222,6 @@ const Calendar = () => {
         dataForEdit={dataForEdit}
         infoData={selectedInfo}
       />
-
-      {/*  <DeleteModal
-        visible={visibleDeleteModale}
-        setVisible={setVisibleDeleteModale}
-        setReRenderData={setReRenderData}
-        reRenderData={reRenderData}
-        Title={'Holidays'}
-        route={'holidays'}
-        id={rowIdForDekete}
-        flagState={flagState}
-        setFlagState={setFlagState}
-        dataForEdit={dataForEdit}
-      /> */}
-
       {loading ? (
         <CRow className="mt-5">
           <CCol sm={5}></CCol>
@@ -337,8 +278,6 @@ const Calendar = () => {
                 resources={usersResources}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, resourceTimeGridPlugin]}
                 events={events}
-                eventMouseEnter={handleMouseEnter}
-                eventMouseLeave={handleMouseLeave}
                 allDaySlot={false}
                 slotDuration="00:15"
                 slotLabelInterval="00:15"
@@ -355,35 +294,10 @@ const Calendar = () => {
                 eventRender={function (info) {
                   info.el.addEventListener('click', function () {
                     handleEventClicked(info.event._def.extendedProps)
-                    // clickCnt++
-                    // let oneClickTimer
-                    // if (clickCnt === 1) {
-                    //   oneClickTimer = setTimeout(function () {
-                    //     clickCnt = 0
-                    //     if (tooltipInstance) {
-                    //       tooltipInstance.dispose()
-                    //       tooltipInstance = null
-                    //     }
-                    //     handleShowDetails(info)
-                    //   }, 400)
-                    // } else if (clickCnt === 2) {
-                    //   clearTimeout(oneClickTimer)
-                    //   clickCnt = 0
-                    //   if (tooltipInstance) {
-                    //     tooltipInstance.dispose()
-                    //     tooltipInstance = null
-                    //   }
-                    //   handleShowDetails(info)
-                    //   handleEventClicked(info)
-                    // }
                   })
                 }}
               />
             )}
-
-            {/* <CRow>
-              <ReactTable data={dataHolidays} columns={columns} />
-            </CRow> */}
           </CRow>
         </>
       )}

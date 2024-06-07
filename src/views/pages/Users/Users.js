@@ -10,13 +10,8 @@ import { isAuthorizatoin } from '../../../utils/isAuthorization'
 import { useNavigate } from 'react-router-dom'
 
 const Users = () => {
-
   const navigate = useNavigate()
-  // check role 
-  useEffect(() => {
-    const nav = isAuthorizatoin('users')
-    nav && navigate(nav)
-  }, [])
+  // check role
 
   const [dataUsers, setDataUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -91,27 +86,35 @@ const Users = () => {
     setRowIdForDekete(row.original.id)
     setVisibleDeleteModale(true)
   }
-  useEffect(() => {
-    ;(async () => {
-      try {
-        // Make a GET request to the API endpoint
-        setLoading(true)
-        const res = await getData('user')
-        setDataUsers(
-          res.data.map((item) => ({
-            ...item,
-            name: item.first_name + ' ' + item.last_name,
-          })),
-        )
 
-        setTimeout(() => {
-          setLoading(false)
-        }, 500)
-      } catch (err) {
-        console.log(err)
-      }
-    })()
+  useEffect(() => {
+    const nav = isAuthorizatoin('users')
+    if (nav) {
+      navigate(nav)
+    } else {
+      handllerGetData()
+    }
   }, [reRenderData])
+
+  const handllerGetData = async () => {
+    try {
+      // Make a GET request to the API endpoint
+      setLoading(true)
+      const res = await getData('user')
+      setDataUsers(
+        res.data.map((item) => ({
+          ...item,
+          name: item.first_name + ' ' + item.last_name,
+        })),
+      )
+
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <React.Fragment>
       <UsersModal

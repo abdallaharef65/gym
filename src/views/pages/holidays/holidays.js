@@ -11,11 +11,6 @@ import { useNavigate } from 'react-router-dom'
 
 const Holidays = () => {
   const navigate = useNavigate()
-  // check role
-  useEffect(() => {
-    const nav = isAuthorizatoin('holidays')
-    nav && navigate(nav)
-  }, [])
 
   const [dataHolidays, setDataHolidays] = useState([])
   const [loading, setLoading] = useState(true)
@@ -91,52 +86,32 @@ const Holidays = () => {
     setRowIdForDekete(row.original.id)
     setVisibleDeleteModale(true)
   }
-  useEffect(() => {
-    ;(async () => {
-      try {
-        // Make a GET request to the API endpoint
-        setLoading(true)
-        // const res = await getData('holidays')
-        // setDataHolidays(
-        //   res.data.map((item) => ({
-        //     ...item,
-        //     name: item.first_name + ' ' + item.last_name,
-        //   })),
-        // )
 
-        setTimeout(() => {
-          setLoading(false)
-        }, 500)
-      } catch (err) {
-        console.log(err)
-      }
-    })()
+  // check role
+  useEffect(() => {
+    const nav = isAuthorizatoin('holidays')
+    if (nav) {
+      navigate(nav)
+    } else {
+      handllerGetData()
+    }
   }, [reRenderData])
+
+  const handllerGetData = async () => {
+    try {
+      // Make a GET request to the API endpoint
+      setLoading(true)
+
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <React.Fragment>
-      {/* <HallModal
-        setReRenderData={setReRenderData}
-        reRenderData={reRenderData}
-        visible={visibleModale}
-        setVisible={setVisibleModale}
-        flagState={flagState}
-        setFlagState={setFlagState}
-        dataForEdit={dataForEdit}
-      />
-
-      <DeleteModal
-        visible={visibleDeleteModale}
-        setVisible={setVisibleDeleteModale}
-        setReRenderData={setReRenderData}
-        reRenderData={reRenderData}
-        Title={'Holidays'}
-        route={'holidays'}
-        id={rowIdForDekete}
-        flagState={flagState}
-        setFlagState={setFlagState}
-        dataForEdit={dataForEdit}
-      /> */}
-
       {loading ? (
         <CRow className="mt-5">
           <CCol sm={5}></CCol>

@@ -516,8 +516,7 @@ const CalendarForm = ({
                   <CFormLabel style={{ backgroundColor: `${mainState.backgroundColor}` }}>
                     Halls: <span className="text-danger">*</span>
                   </CFormLabel>
-                  <ReactSelect
-                    //mainState.user_id mainState.user_name
+                  <ReactSelect                    
                     value={{ value: mainState.hall_id, label: mainState.hall_name }}
                     onChange={(e) => {
                       setMainState((current) => ({

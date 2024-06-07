@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   CButton,
@@ -18,6 +18,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import { addData, selectDataByParam } from '../../../helper'
 import { addInstance, deleteInstance, getInstance, updateInstance } from '../../../helper/instacnes'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 const Login = () => {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
@@ -25,6 +26,11 @@ const Login = () => {
   const [falgValidation, setFalgValidation] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  useEffect(() => {
+    localStorage.clear()
+    localStorage.removeItem('authToken')
+    delete axios.defaults.headers.common['Authorization']
+  }, [])
   const handleSubmitLogInData = async () => {
     try {
       setFalgValidation(true)
@@ -36,6 +42,7 @@ const Login = () => {
           deleteInstance.defaults.headers['x-access-token'] = resUser.data.token
           updateInstance.defaults.headers['x-access-token'] = resUser.data.token
           addInstance.defaults.headers['x-access-token'] = resUser.data.token
+          localStorage.setItem('authToken', resUser.data.token)
           resUser = {
             ...resUser.data.data,
             jwt_token: resUser.data.token,
@@ -54,7 +61,10 @@ const Login = () => {
             const paramMainPage = `id=${resRole.data[0].main_page_id}`
             const resMainPage = await selectDataByParam('screens', paramMainPage)
             if (resMainPage.no_of_records > 0) {
-              navigate(`/${resMainPage.data[0].screen_route}`)
+              setTimeout(() => {
+                navigate(`/${resMainPage.data[0].screen_route}`)
+              }, 1000)
+              //
             }
           }
         } else {

@@ -72,7 +72,7 @@ const AppHeader = () => {
                   localStorage.clear()
                   setTimeout(() => {
                     navigate('/login')
-                  }, 1000)
+                  }, 2000)
                 }}
               />
 

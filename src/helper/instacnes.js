@@ -23,7 +23,16 @@ export const addInstance = axios.create({
   method: 'POST',
 })
 
-// export const patchInstance = axios.create({
-//   baseURL: baseURL,
-//   method: 'PATCH',
-// })
+const authToken = localStorage.getItem('authToken')
+if (authToken) {
+  getInstance.defaults.headers.common['Authorization'] = `${authToken}`
+  deleteInstance.defaults.headers.common['Authorization'] = `${authToken}`
+  updateInstance.defaults.headers.common['Authorization'] = `${authToken}`
+  addInstance.defaults.headers.common['Authorization'] = `${authToken}`
+}
+if (authToken) {
+  getInstance.defaults.headers.common['x-access-token'] = authToken
+  deleteInstance.defaults.headers.common['x-access-token'] = authToken
+  updateInstance.defaults.headers.common['x-access-token'] = authToken
+  addInstance.defaults.headers.common['x-access-token'] = authToken
+}

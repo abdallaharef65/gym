@@ -7,7 +7,6 @@ import {
   // patchInstance,
 } from './instacnes'
 
-
 export const deleteDataByParam = async (route, id, param) => {
   try {
     let response = await deleteInstance.request(`${route}?${param}=${id}`)
@@ -17,14 +16,6 @@ export const deleteDataByParam = async (route, id, param) => {
   }
 }
 
-// export const deleteWithParams = async (route, query) => {
-//   try {
-//     let response = await deleteInstance.request(`${route}?${query}`)
-//     return response.data
-//   } catch (e) {
-//     throw new Error(e.message)
-//   }
-// }
 //get data from component and fetch it in api
 export const addData = async (route, data) => {
   try {
@@ -34,22 +25,7 @@ export const addData = async (route, data) => {
     throw new Error(e.message)
   }
 }
-// export const addDataWithoutBody = async (route) => {
-//   try {
-//     let response = await addInstance.request(route)
-//     return response
-//   } catch (e) {
-//     throw new Error(e.message)
-//   }
-// }
-// export const patchData = async (route, query) => {
-//   try {
-//     let response = await patchInstance.request(`${route}?${query}`)
-//     return response.data
-//   } catch (e) {
-//     throw new Error(e.message)
-//   }
-// }
+
 //get id from component to fecth row from api and return it to component
 export const selectDataByParam = async (route, query) => {
   try {
@@ -59,16 +35,6 @@ export const selectDataByParam = async (route, query) => {
     throw new Error(e.message)
   }
 }
-
-// //get service id from component to fecth row from api and return it to component
-// export const selectDataById = async (route, id, queryVar = 'id') => {
-//   try {
-//     let response = await getInstance.request(`${route}?${queryVar}=${id}`)
-//     return response.data
-//   } catch (e) {
-//     throw new Error(e.message)
-//   }
-// }
 
 //get all services from api and return it to component
 export const getData = async (route) => {
@@ -89,12 +55,3 @@ export const updateData = async (route, id, data, qv = 'id') => {
     throw new Error(e.message)
   }
 }
-
-// export const updateDataWithoutId = async (route, data) => {
-//   try {
-//     let response = await updateInstance.request(`${route}`, { data })
-//     return response
-//   } catch (e) {
-//     throw new Error(e.message)
-//   }
-// }
