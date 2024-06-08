@@ -62,8 +62,6 @@ const UsersModal = ({
   const [errorMsg, setErrorMsg] = useState('')
   const [selectedDays, setSelectedDays] = useState([])
 
-  console.log(selectedDays)
-
   const [weekdays, setWeekDays] = useState([
     { id: 6, label: 'Saturday' },
     { id: 0, label: 'Sunday' },
@@ -106,7 +104,6 @@ const UsersModal = ({
 
           // Update state if editing
           if (flagState == 2) {
-            console.log(dataForEdit)
             setMainState((current) => ({
               ...current,
               id: dataForEdit.id,
@@ -172,7 +169,6 @@ const UsersModal = ({
             course_name: mainState.course_name,
             days: selectedDays,
           }
-          console.log(bodyData)
 
           if (flagState == 1) {
             var res = await addData('courses', bodyData)
@@ -343,7 +339,6 @@ const UsersModal = ({
                       required
                       selected={mainState.end_time}
                       onChange={(e) => {
-                        console.log(e)
                         setMainState((current) => ({
                           ...current,
                           end_time: e,

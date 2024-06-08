@@ -19,17 +19,20 @@ import { addData, selectDataByParam } from '../../../helper'
 import { addInstance, deleteInstance, getInstance, updateInstance } from '../../../helper/instacnes'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import UsersModal from '../Users/modalForm'
 const Login = () => {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [falgValidation, setFalgValidation] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-
+  const [visibleModale, setVisibleModale] = useState(false)
+  const [reRenderData, setReRenderData] = useState(false)
+  const [flagState, setFlagState] = useState(1)
   useEffect(() => {
     localStorage.clear()
-    localStorage.removeItem('authToken')
-    delete axios.defaults.headers.common['Authorization']
+    localStorage.removeItem('Authorization')
+    // delete axios.defaults.headers.common['Authorization']
   }, [])
   const handleSubmitLogInData = async () => {
     try {
@@ -38,10 +41,10 @@ const Login = () => {
         let resUser = await addData('login', { email: username.trim(), password: password })
         if (resUser.data.success) {
           //token
-          getInstance.defaults.headers['x-access-token'] = resUser.data.token
-          deleteInstance.defaults.headers['x-access-token'] = resUser.data.token
-          updateInstance.defaults.headers['x-access-token'] = resUser.data.token
-          addInstance.defaults.headers['x-access-token'] = resUser.data.token
+          getInstance.defaults.headers['Authorization'] = resUser.data.token
+          deleteInstance.defaults.headers['Authorization'] = resUser.data.token
+          updateInstance.defaults.headers['Authorization'] = resUser.data.token
+          addInstance.defaults.headers['Authorization'] = resUser.data.token
           localStorage.setItem('authToken', resUser.data.token)
           resUser = {
             ...resUser.data.data,
@@ -63,6 +66,7 @@ const Login = () => {
             if (resMainPage.no_of_records > 0) {
               setTimeout(() => {
                 navigate(`/${resMainPage.data[0].screen_route}`)
+                //
               }, 1000)
               //
             }
@@ -75,6 +79,7 @@ const Login = () => {
       console.error(error.message)
     }
   }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -123,6 +128,15 @@ const Login = () => {
                           Login
                         </CButton>
                       </CCol>
+                      <CCol xs={6}>
+                        <CButton
+                          color="primary"
+                          className="px-4"
+                          onClick={() => setVisibleModale(true)}
+                        >
+                          Registration
+                        </CButton>
+                      </CCol>
                     </CRow>
                   </CForm>
                 </CCardBody>
@@ -130,6 +144,15 @@ const Login = () => {
             </CCardGroup>
           </CCol>
         </CRow>
+        {visibleModale && (
+          <UsersModal
+            flagState={flagState}
+            setFlagState={setFlagState}
+            setReRenderData={setReRenderData}
+            visible={visibleModale}
+            setVisible={setVisibleModale}
+          />
+        )}
       </CContainer>
     </div>
   )

@@ -16,8 +16,8 @@ const Courses = () => {
   const [loading, setLoading] = useState(true)
   const [visibleModale, setVisibleModale] = useState(false)
   const [reRenderData, setReRenderData] = useState(false)
+  const [flagDisableUsers, setFlagDisableUsers] = useState(false)
   const [visibleDeleteModale, setVisibleDeleteModale] = useState(false)
-
   const [flagState, setFlagState] = useState(0)
   const [dataForEdit, setDataForEdit] = useState({})
   const [rowIdForDekete, setRowIdForDekete] = useState({})
@@ -67,6 +67,7 @@ const Courses = () => {
       Cell: ({ row }) => (
         <React.Fragment>
           <CButton
+            disabled={flagDisableUsers}
             color="primary"
             className="me-3"
             onClick={() => {
@@ -77,6 +78,7 @@ const Courses = () => {
           </CButton>
 
           <CButton
+            disabled={flagDisableUsers}
             color="danger"
             className="me-3 text-white"
             onClick={() => {
@@ -102,12 +104,10 @@ const Courses = () => {
     setVisibleDeleteModale(true)
   }
   const DayText = (days) => {
-    // console.log('i am here')
     var day = ''
     for (let i = 0; i < days.length; i++) {
       day += weekdays.filter((x) => x.id == days[i])[0].label + ',' + ' '
     }
-
     return day
   }
 
@@ -123,6 +123,11 @@ const Courses = () => {
 
   const handllerGetData = async () => {
     try {
+      const user_screens = localStorage.getItem('userScreens')
+        ? JSON.parse(localStorage.getItem('userScreens'))
+        : null
+
+      setFlagDisableUsers(user_screens[0].role_id == 3 ? true : false)
       // Make a GET request to the API endpoint
       setLoading(true)
       const res = await getData('courses')
@@ -185,6 +190,7 @@ const Courses = () => {
             </CCol>
             <CCol sm={1}>
               <CButton
+                disabled={flagDisableUsers}
                 color="success"
                 className="me-3 text-white"
                 onClick={() => {
